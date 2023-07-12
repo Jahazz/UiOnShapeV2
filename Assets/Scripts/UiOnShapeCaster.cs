@@ -15,7 +15,9 @@ public class UiOnShapeCaster : MonoBehaviour
     [field: SerializeField]
     private Camera SceneCamera { get; set; }
     [field: SerializeField]
-    private MeshRenderer TargetMesh { get; set; }
+    private Renderer TargetRenderer { get; set; }
+    [field: SerializeField]
+    private int RendererMaterialId { get; set; } = 0;
     [field: SerializeField]
     private Collider TargetMeshCollider { get; set; }
 
@@ -29,8 +31,8 @@ public class UiOnShapeCaster : MonoBehaviour
     [field: Tooltip("Warning, using shared material sets texture for entire material. Make sure to use custom separate material.")]
     private bool UseSharedMaterial { get; set; }
 
-    public static bool IsRepositionEnabled { get; private set; }
-    public static Vector2 RepositionedCursorPosition { get; private set; }
+    public static UiOnShapeCaster CurrentMouseoveredUiOnShape { get; private set; }
+    public Vector2 RepositionedCursorPosition { get; private set; }
     private RenderTexture CurrentRendererTexture { get; set; }
 
     protected virtual void Start ()
@@ -88,11 +90,11 @@ public class UiOnShapeCaster : MonoBehaviour
     {
         if (useSharedMaterial == true)
         {
-            TargetMesh.sharedMaterial.mainTexture = textureToSet;
+            TargetRenderer.sharedMaterials[RendererMaterialId].mainTexture = textureToSet;
         }
         else
         {
-            TargetMesh.material.mainTexture = textureToSet;
+            TargetRenderer.materials[RendererMaterialId].mainTexture = textureToSet;
         }
     }
 
@@ -105,12 +107,15 @@ public class UiOnShapeCaster : MonoBehaviour
             Vector2 textureCoord = hit.textureCoord;
             textureCoord = new Vector2(textureCoord.x * UIMainRectTransform.rect.width, textureCoord.y * UIMainRectTransform.rect.height);
             RepositionedCursorPosition = textureCoord;
-            IsRepositionEnabled = true;
+            CurrentMouseoveredUiOnShape = this;
             CanvasRaycaster.enabled = true;
         }
         else
         {
-            IsRepositionEnabled = false;
+            if (CurrentMouseoveredUiOnShape == this)
+            {
+                CurrentMouseoveredUiOnShape = null;
+            }
             CanvasRaycaster.enabled = false;
         }
     }

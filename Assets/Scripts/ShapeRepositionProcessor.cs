@@ -24,9 +24,9 @@ public class ShapeRepositionProcessor : InputProcessor<Vector2>
 
     public override Vector2 Process (Vector2 value, InputControl control)
     {
-        if (UiOnShapeCaster.IsRepositionEnabled)
+        if (UiOnShapeCaster.CurrentMouseoveredUiOnShape != null)
         {
-            value = UiOnShapeCaster.RepositionedCursorPosition;
+            value = UiOnShapeCaster.CurrentMouseoveredUiOnShape.RepositionedCursorPosition;
         }
 
         return value;
